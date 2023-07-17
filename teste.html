@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Poker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .input-container input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .input-container button {
+      padding: 8px 15px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .estimativas-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .estimativas-list li {
+      background-color: #f2f2f2;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .estimativas-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .calcular-media {
+      text-align: center;
+    }
+
+    .calcular-media button {
+      background-color: #28a745;
+    }
+
+    .room-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .room-container.show {
+      display: block;
+    }
+
+    .room-heading {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .room-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .room-list li {
+      padding: 5px 0;
+      border-bottom: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Planning Poker</h1>
+    <div class="input-container">
+      <input type="text" id="nomeInput" placeholder="Seu nome">
+      <button onclick="entrarNaSala()">Entrar na Sala</button>
+    </div>
+    <div class="room-container" id="salaVotacao">
+      <div class="room-heading">Sala de Votação</div>
+      <ul class="room-list" id="votacaoList"></ul>
+      <div class="calcular-media">
+        <button onclick="calcularMedia()" id="btnCalcularMedia" disabled>Calcular Média</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Array para armazenar as estimativas dos jogadores
+    let estimativas = [];
+
+    // Função para entrar na sala de votação
+    function entrarNaSala() {
+      const nomeInput = document.getElementById("nomeInput");
+      const nome = nomeInput.value.trim();
+
+      if (nome === "") {
+        alert("Por favor, digite seu nome para entrar na sala.");
+        return;
+      }
+
+      // Esconder o formulário de entrada e mostrar a sala de votação
+      document.getElementById("salaVotacao").classList.add("show");
+      document.getElementById("nomeInput").disabled = true;
+
+      // Adicionar nome à lista de votação
+      const votacaoList = document.getElementById("votacaoList");
+      const listItem = document.createElement("li");
+      listItem.innerText = nome;
+      votacaoList.appendChild(listItem);
+    }
+
+    // Função para calcular a média das estimativas
+    function calcularMedia() {
+      if (estimativas.length === 0) {
+        alert("Nenhuma estimativa foi adicionada ainda.");
+        return;
+      }
+
+      const somaEstimativas = estimativas.reduce((acc, curr) => acc + curr, 0);
+      const mediaEstimativas = somaEstimativas / estimativas.length;
+      alert("A média das estimativas é: " + mediaEstimativas.toFixed(2));
+    }
+
+    // Função para virar as cartas e calcular a média (apenas para o espectador)
+    function virarCartas() {
+      const btnCalcularMedia = document.getElementById("btnCalcularMedia");
+      btnCalcularMedia.disabled = false;
+
+      const votacaoList = document.getElementById("votacaoList");
+      const votacaoItens = votacaoList.querySelectorAll("li");
+
+      votacaoItens.forEach(item => {
+        const estimativa = parseInt(prompt(`${item.innerText}, insira sua estimativa (0 a 13):`));
+        
+        if (isNaN(estimativa) || estimativa < 0 || estimativa > 13) {
+          alert("Estimativa inválida. Tente novamente.");
+          return;
+        }
+
+        estimativas.push(estimativa);
+        item.innerHTML = `${item.innerText} - ${estimativa}`;
+      });
+    }
+  </script>
+</body>
+
+</html>
